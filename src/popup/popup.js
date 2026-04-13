@@ -14,6 +14,7 @@ const sectionHistory = document.getElementById("section-history");
 const sectionPlatforms = document.getElementById("section-platforms");
 const historyList = document.getElementById("history-list");
 const historyEmpty = document.getElementById("history-empty");
+const clearHistoryBtn = document.getElementById("clear-history");
 const permissionOverlay = document.getElementById("permission-overlay");
 const grantPermissionsBtn = document.getElementById("grant-permissions");
 const permissionStatus = document.getElementById("permission-status");
@@ -62,6 +63,9 @@ tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     activateTab(button.dataset.tab);
   });
+});
+clearHistoryBtn.addEventListener("click", async () => {
+  await clearHistory();
 });
 
 grantPermissionsBtn.addEventListener("click", async () => {
@@ -313,6 +317,7 @@ async function saveTrackToHistory(track) {
 function renderHistory() {
   historyList.innerHTML = "";
   historyEmpty.classList.toggle("hidden", recognitionHistory.length > 0);
+  clearHistoryBtn.disabled = recognitionHistory.length === 0;
 
   recognitionHistory.forEach((item) => {
     const node = document.createElement("div");
@@ -430,7 +435,9 @@ function getI18nMessages(lang) {
       permissionsMic: "Microfono del equipo",
       permissionsTab: "Captura de pestana/pantalla con audio",
       grantPermissions: "Conceder permisos y continuar",
-      historyEmpty: "Aun no hay canciones reconocidas."
+      historyEmpty: "Aun no hay canciones reconocidas.",
+      clearHistory: "Limpiar historial",
+      clearHistoryConfirm: "¿Seguro que quieres borrar todo el historial?"
     },
     en: {
       listen: "Listen",
@@ -447,7 +454,9 @@ function getI18nMessages(lang) {
       permissionsMic: "Device microphone",
       permissionsTab: "Tab/screen capture with audio",
       grantPermissions: "Grant permissions and continue",
-      historyEmpty: "No recognized songs yet."
+      historyEmpty: "No recognized songs yet.",
+      clearHistory: "Clear history",
+      clearHistoryConfirm: "Are you sure you want to remove all history?"
     },
     fr: {
       listen: "Ecouter",
@@ -464,7 +473,9 @@ function getI18nMessages(lang) {
       permissionsMic: "Microphone de l'appareil",
       permissionsTab: "Capture d'onglet/ecran avec audio",
       grantPermissions: "Accorder les autorisations",
-      historyEmpty: "Aucune chanson reconnue."
+      historyEmpty: "Aucune chanson reconnue.",
+      clearHistory: "Effacer l'historique",
+      clearHistoryConfirm: "Voulez-vous vraiment supprimer tout l'historique ?"
     },
     de: {
       listen: "Anhoren",
@@ -481,7 +492,9 @@ function getI18nMessages(lang) {
       permissionsMic: "Mikrofon des Gerats",
       permissionsTab: "Tab-/Bildschirmaufnahme mit Audio",
       grantPermissions: "Berechtigungen erteilen",
-      historyEmpty: "Noch keine erkannten Songs."
+      historyEmpty: "Noch keine erkannten Songs.",
+      clearHistory: "Verlauf loschen",
+      clearHistoryConfirm: "Mochtest du wirklich den gesamten Verlauf loschen?"
     }
   };
 
@@ -505,8 +518,22 @@ function applyTranslations() {
   permissionsTab.textContent = t.permissionsTab;
   grantPermissionsBtn.textContent = t.grantPermissions;
   historyEmpty.textContent = t.historyEmpty;
+  clearHistoryBtn.textContent = t.clearHistory;
   document.documentElement.lang = uiLanguage;
   updateLanguageTriggerLabel();
+}
+
+async function clearHistory() {
+  const t = getI18nMessages(uiLanguage);
+  const confirmed = globalThis.confirm(t.clearHistoryConfirm);
+  if (!confirmed) {
+    return;
+  }
+
+  recognitionHistory = [];
+  await ext.storage.local.set({ recognition_history: [] });
+  renderHistory();
+  setStatus(t.clearHistory);
 }
 
 function renderLanguageMenu() {
