@@ -10,6 +10,8 @@ if (!AUDD_TOKEN) {
 
 const server = http.createServer(async (req, res) => {
   setCors(res);
+  const requestUrl = new URL(req.url || "/", `http://localhost:${PORT}`);
+  const pathname = requestUrl.pathname;
 
   if (req.method === "OPTIONS") {
     res.writeHead(204);
@@ -17,7 +19,18 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.url !== "/recognize" || req.method !== "POST") {
+  if (pathname === "/" && req.method === "GET") {
+    writeJson(res, 200, { status: "ok", service: "songscope-recognition-proxy" });
+    return;
+  }
+
+  if (pathname === "/health" && req.method === "GET") {
+    writeJson(res, 200, { status: "ok" });
+    return;
+  }
+
+  const isRecognizePath = pathname === "/recognize" || pathname === "/recognize/";
+  if (!isRecognizePath || req.method !== "POST") {
     writeJson(res, 404, { status: "error", error: "Not found" });
     return;
   }
