@@ -144,6 +144,20 @@
         padding: 10px 12px;
         margin-top: 8px;
       }
+      .history-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 8px;
+      }
+      .secondary-btn {
+        width: auto;
+        margin: 0;
+        border: 1px solid rgba(143, 132, 211, 0.45);
+        background: linear-gradient(180deg, rgba(48, 38, 92, 0.95), rgba(30, 24, 61, 0.95));
+        color: var(--text);
+        border-radius: 8px;
+        padding: 7px 10px;
+      }
       .history-row {
         display: flex;
         gap: 10px;
@@ -253,6 +267,9 @@
       </section>
 
       <section id="section-history" class="section hidden">
+        <div class="history-actions">
+          <button id="clear-history" class="secondary-btn" type="button">Limpiar historial</button>
+        </div>
         <div id="history-empty" class="muted">Aun no hay canciones reconocidas.</div>
         <div id="history-list"></div>
       </section>
