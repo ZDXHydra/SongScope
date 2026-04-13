@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "SongScope",
+  "version": "0.1.0",
+  "description": "Reconoce musica desde audio de pestana y microfono, y permite guardarla en plataformas musicales.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "tabs",
+    "tabCapture"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "SongScope",
+    "default_popup": "src/popup/popup.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "songscope@example.com"
+    }
+  }
+}
