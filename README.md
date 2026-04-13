@@ -40,7 +40,7 @@ Conclusión: la estrategia recomendada es un **core compartido** + capas por nav
 
 - Estructura base lista.
 - Flujo de mensajes popup -> background listo.
-- Cliente de reconocimiento conectado a proxy local seguro.
+- Cliente de reconocimiento conectado a proxy cloud seguro.
 - Adaptador Spotify iniciado (falta implementacion completa de playlist y OAuth en extension/backend).
 - Resto de plataformas marcadas como pendientes.
 
@@ -54,7 +54,8 @@ Por eso SongScope debe usar un proxy en la nube:
    - `AUDD_API_TOKEN=tu_token_privado`
 3. Publica el endpoint HTTPS:
    - `https://TU-DOMINIO/recognize`
-4. Actualiza `src/lib/recognitionClient.js` en `PROXY_ENDPOINT` con ese dominio.
+   - Healthcheck: `https://TU-DOMINIO/health`
+4. Actualiza `src/lib/recognitionClient.js` en `PROXY_BASE_URL` con ese dominio.
 
 La extension ya esta preparada para no pedir token al usuario final.
 
