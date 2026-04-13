@@ -1,21 +1,21 @@
-const PROXY_ENDPOINT = "https://songscope-recognition.onrender.com/recognize";
+const PROXY_BASE_URL = "https://songscope-recognition.onrender.com";
+const PROXY_ENDPOINTS = [
+  `${PROXY_BASE_URL}/recognize`,
+  `${PROXY_BASE_URL}/recognize/`
+];
 
 export async function recognizeAudioChunk({
   source,
   base64Audio,
   mimeType = "audio/webm"
 }) {
-  const response = await fetch(PROXY_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      source,
-      mimeType,
-      base64Audio
-    })
+  const requestBody = JSON.stringify({
+    source,
+    mimeType,
+    base64Audio
   });
+
+  const response = await fetchWithEndpointFallback(requestBody);
 
   if (!response.ok) {
     if (response.status === 503) {
@@ -41,4 +41,29 @@ export async function recognizeAudioChunk({
   }
 
   return payload.result;
+}
+
+async function fetchWithEndpointFallback(requestBody) {
+  let lastResponse = null;
+  for (const endpoint of PROXY_ENDPOINTS) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: requestBody
+    });
+
+    if (response.status !== 404) {
+      return response;
+    }
+    lastResponse = response;
+  }
+
+  if (lastResponse) {
+    throw new Error(
+      "El endpoint cloud no existe (404). Revisa URL y redeploy del proxy."
+    );
+  }
+  throw new Error("No se pudo contactar con el servicio cloud.");
 }
